@@ -3,8 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0E1519" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" content="#EEF1F3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#F1EBDD">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Fierro">
@@ -15,42 +14,18 @@
 <title>Fierro · Kilimanjaro Trainer</title>
 <style>
   /* ---------- Tokens ---------- */
+  /* Single fixed theme — cream paper + near-black ink, matching the app icon.
+     Ink is the primary accent; muted sage / clay / ochre carry the few semantic cues. */
   :root{
-    --bg:#0E1519; --bg-2:#111A20; --surface:#172128; --surface-2:#1E2A32;
-    --border:#283842; --border-2:#33454F;
-    --text:#EAF1F4; --dim:#9CB0BA; --faint:#64757F;
-    --accent:#F6A93B; --accent-2:#FFC873; --accent-ink:#1C1206;
-    --cool:#3FC5C9; --good:#4CC974; --warn:#F6A93B; --bad:#F0603A;
-    --shadow:0 6px 24px rgba(0,0,0,.35);
+    --bg:#F1EBDD; --bg-2:#ECE5D4; --surface:#FBF8F1; --surface-2:#F2ECDF;
+    --border:#E4DBC8; --border-2:#D6CBB3;
+    --text:#1A1A17; --dim:#6E665A; --faint:#A69C88;
+    --accent:#1E1B16; --accent-2:#3C372E; --accent-ink:#F6F1E6;
+    --cool:#5C7650; --good:#5C7650; --warn:#A9822F; --bad:#A2492F;
+    --shadow:0 1px 2px rgba(40,33,20,.05), 0 8px 22px rgba(40,33,20,.06);
     --font-ui:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
     --font-mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
     --r:14px; --r-sm:10px;
-  }
-  @media (prefers-color-scheme: light){
-    :root{
-      --bg:#EEF1F3; --bg-2:#E6EBED; --surface:#FFFFFF; --surface-2:#F3F6F7;
-      --border:#DBE2E6; --border-2:#C9D3D8;
-      --text:#15242C; --dim:#566771; --faint:#8A9AA2;
-      --accent:#C87A1E; --accent-2:#A8641A; --accent-ink:#FFF6EA;
-      --cool:#0E858B; --good:#1E9E4A; --warn:#C87A1E; --bad:#C8452A;
-      --shadow:0 6px 20px rgba(30,50,60,.12);
-    }
-  }
-  :root[data-theme="dark"]{
-    --bg:#0E1519; --bg-2:#111A20; --surface:#172128; --surface-2:#1E2A32;
-    --border:#283842; --border-2:#33454F;
-    --text:#EAF1F4; --dim:#9CB0BA; --faint:#64757F;
-    --accent:#F6A93B; --accent-2:#FFC873; --accent-ink:#1C1206;
-    --cool:#3FC5C9; --good:#4CC974; --warn:#F6A93B; --bad:#F0603A;
-    --shadow:0 6px 24px rgba(0,0,0,.35);
-  }
-  :root[data-theme="light"]{
-    --bg:#EEF1F3; --bg-2:#E6EBED; --surface:#FFFFFF; --surface-2:#F3F6F7;
-    --border:#DBE2E6; --border-2:#C9D3D8;
-    --text:#15242C; --dim:#566771; --faint:#8A9AA2;
-    --accent:#C87A1E; --accent-2:#A8641A; --accent-ink:#FFF6EA;
-    --cool:#0E858B; --good:#1E9E4A; --warn:#C87A1E; --bad:#C8452A;
-    --shadow:0 6px 20px rgba(30,50,60,.12);
   }
 
   *{box-sizing:border-box}
@@ -63,7 +38,7 @@
   .app{
     max-width:520px; margin:0 auto; min-height:100vh;
     background:
-      radial-gradient(120% 60% at 50% -10%, rgba(246,169,59,.10), transparent 60%),
+      radial-gradient(120% 60% at 50% -10%, rgba(30,27,22,.035), transparent 60%),
       var(--bg);
     padding-bottom:96px; position:relative;
   }
@@ -100,14 +75,14 @@
   .view.active{display:block}
   @keyframes fade{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
 
-  .eyebrow{font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); font-weight:700}
-  .h-lg{font-size:22px; font-weight:800; letter-spacing:-.01em; margin-top:3px}
+  .eyebrow{font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--faint); font-weight:700}
+  .h-lg{font-size:26px; font-weight:800; letter-spacing:-.02em; margin-top:2px}
   .muted{color:var(--dim)}
   .faint{color:var(--faint)}
 
   .card{
-    background:var(--surface); border:1px solid var(--border); border-radius:var(--r);
-    padding:14px; margin-top:12px; box-shadow:var(--shadow);
+    background:var(--surface); border:1px solid var(--border); border-radius:16px;
+    padding:16px; margin-top:12px; box-shadow:none;
   }
   .card.tight{padding:12px}
 
@@ -193,7 +168,7 @@
   .cardio-row .unit{font-size:11px; color:var(--faint); width:26px}
 
   /* buttons */
-  .btn{display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:14px; border-radius:12px; border:none; font-size:15px; font-weight:800; letter-spacing:.02em}
+  .btn{display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:14px; border-radius:14px; border:none; font-size:15px; font-weight:800; letter-spacing:.02em}
   .btn.primary{background:var(--accent); color:var(--accent-ink)}
   .btn.ghost{background:var(--surface); color:var(--text); border:1px solid var(--border)}
   .btn.subtle{background:var(--surface-2); color:var(--dim); border:1px solid var(--border); font-weight:700; font-size:13.5px; padding:11px}
@@ -323,6 +298,61 @@
   .bg.on .em{filter:none}
   .bg .lock{position:absolute; top:7px; right:8px; font-size:10px; color:var(--faint)}
 
+  /* nicotine-free calendar */
+  .cal-card{margin-top:10px}
+  .cal-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px}
+  .cal-top .mo{font-size:14px; font-weight:700}
+  .cal-nav{display:flex; gap:6px}
+  .cal-nav button{width:30px; height:30px; border-radius:8px; border:1px solid var(--border); background:var(--surface-2); color:var(--text); font-size:15px; line-height:1; cursor:pointer; padding:0}
+  .cal-nav button:disabled{opacity:.3; cursor:default}
+  .cal-dow{display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:5px}
+  .cal-dow span{text-align:center; font-size:10px; color:var(--faint); font-weight:600}
+  .cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:4px}
+  .cal-cell{aspect-ratio:1/1; border-radius:8px; border:1px solid var(--border); background:var(--surface); display:flex; align-items:center; justify-content:center; position:relative; font-size:12px; color:var(--dim); cursor:pointer; user-select:none}
+  .cal-cell.blank{border:none; background:none; cursor:default}
+  .cal-cell.future{opacity:.32; cursor:default}
+  .cal-cell.today{border-color:var(--accent); border-width:2px}
+  .cal-cell.ticked{background:color-mix(in srgb,var(--good) 24%,var(--surface)); border-color:color-mix(in srgb,var(--good) 55%,transparent); color:var(--text); font-weight:700}
+  .cal-cell.goal-on{border-color:color-mix(in srgb,var(--accent) 60%,transparent)}
+  .cal-cell .chk{position:absolute; bottom:2px; font-size:8px; color:var(--good)}
+  .cal-cell .goal{position:absolute; top:1px; right:2px; font-size:9px; line-height:1}
+  .cal-legend{display:flex; gap:14px; justify-content:center; margin-top:11px; font-size:10.5px; color:var(--faint); flex-wrap:wrap}
+  .cal-legend span{display:inline-flex; align-items:center; gap:4px}
+  .cal-dot{width:10px; height:10px; border-radius:3px; display:inline-block}
+  .cal-sum{text-align:center; font-size:12px; color:var(--dim); margin-top:11px; line-height:1.5}
+  .cal-sum b{color:var(--text)}
+
+  /* ===== Quit tab — sleek pilot (scoped to #view-quit; rolls out to other tabs on approval) ===== */
+  #view-quit .eyebrow{color:var(--faint); font-size:10px; letter-spacing:.24em}
+  #view-quit .h-lg{font-size:26px; letter-spacing:-.02em}
+  #view-quit .card{border-radius:18px; box-shadow:none; padding:18px; margin-top:10px}
+
+  #view-quit .clock-card{padding:26px 18px 20px; background:
+      radial-gradient(140% 115% at 50% -8%, color-mix(in srgb,var(--cool) 17%,transparent), transparent 60%),
+      linear-gradient(180deg, color-mix(in srgb,var(--surface-2) 55%,var(--surface)), var(--surface));
+      border-color:color-mix(in srgb,var(--cool) 20%,var(--border))}
+  #view-quit .clock-card .days{font-size:76px; letter-spacing:-.045em}
+  #view-quit .clock-card .days .u{font-size:15px; letter-spacing:.1em; text-transform:uppercase; color:var(--faint); font-weight:600; margin-left:8px}
+  #view-quit .clock-card .hms{font-size:20px; letter-spacing:.16em; margin-top:12px}
+  #view-quit .clock-card .since{font-size:10px; text-transform:uppercase; letter-spacing:.13em; margin-top:10px}
+
+  #view-quit .next-ms{margin-top:20px; padding-top:18px; border-top:1px solid var(--border)}
+  #view-quit .next-ms .track{height:9px; border-color:transparent; background:color-mix(in srgb,var(--bg) 55%,var(--surface-2))}
+  #view-quit .next-ms .nm-pct{font-size:20px}
+  #view-quit .nm-count{margin-top:14px; padding-top:13px; border-top:1px solid var(--border); color:var(--dim)}
+  #view-quit .longest{margin-top:8px}
+
+  #view-quit .badges{gap:8px; margin-top:10px}
+  #view-quit .bg{border-radius:14px; padding:13px 8px; opacity:1}
+  #view-quit .bg:not(.on){opacity:.4}
+  #view-quit .bg.on{border-color:color-mix(in srgb,var(--accent) 45%,transparent); background:
+      radial-gradient(120% 120% at 50% 0%, color-mix(in srgb,var(--accent) 13%,transparent), transparent 68%), var(--surface)}
+  #view-quit .bg .em{font-size:22px}
+  #view-quit .bg .bl{font-size:11px; margin-top:6px}
+  #view-quit .bg .bd{font-size:9px; margin-top:3px}
+
+  #view-quit .btn{border-radius:14px}
+
   .setup-quit{text-align:center; padding:24px 12px}
   .setup-quit .em{font-size:40px}
   .setup-quit h3{margin-top:8px; font-size:18px}
@@ -378,15 +408,12 @@
   <header class="top">
     <div class="brand">
       <div class="mark">
-        <svg class="peak" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 20L9.5 7l3 5 2-3.2L21 20H3z" fill="currentColor"/><path d="M9.5 7l3 5 1.2-1.9L12 6.2 9.5 7z" fill="rgba(255,255,255,.35)"/></svg>
+        <svg class="peak" viewBox="12 12 76 76" fill="none" aria-hidden="true"><rect x="23" y="33" width="3" height="34" fill="currentColor"/><rect x="32.5" y="39.5" width="3" height="21" fill="currentColor"/><rect x="74" y="33" width="3" height="34" fill="currentColor"/><rect x="64.5" y="39.5" width="3" height="21" fill="currentColor"/><rect x="41.2" y="48.5" width="17.6" height="3" fill="currentColor"/></svg>
         <div>
           <h1>Fierro</h1>
           <div class="sub">Kilimanjaro Prep</div>
         </div>
       </div>
-      <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19" stroke-linecap="round"/></svg>
-      </button>
     </div>
     <div class="summit">
       <div class="row"><span>To summit</span><span><b id="summitDays">—</b> days</span></div>
@@ -439,12 +466,13 @@ var PROGRAM = {
       {id:"scaption", n:"Scaption with Dumbbell", d:"2 × 12 reps"}
     ]},
     main:[
-      {id:"ua_incline_press", n:"Incline DB Press", sets:3, lo:8, hi:10, rest:50},
+      {id:"ua_machine_incline_press", n:"Machine Incline Chest Press", sets:3, lo:8, hi:10, rest:50, note:"Machine/fixed path — shoulder-safe pick that removes AC-joint strain vs free-weight pressing."},
+      {id:"ua_htl_fly", n:"High-to-Low Cable Fly", sets:3, lo:12, hi:15, rest:50, note:"Lower chest — the region previously missing, from a shoulder-friendly cable angle."},
       {id:"ua_seated_row", n:"Seated Row Machine", sets:3, lo:10, hi:12, rest:50},
-      {id:"ua_db_shoulder", n:"DB Shoulder Press", sets:3, lo:10, hi:12, rest:50, note:"AC joint: if this causes discomfort, reduce range of motion and flag to Harrison."},
-      {id:"ua_lat_raise", n:"Cable Lateral Raise", sets:3, lo:15, hi:15, rest:50, note:"Replaces the light DB abduction — constant-tension delt work at no added joint load."},
-      {id:"ua_tri_push", n:"Triceps Pushdown", sets:3, lo:12, hi:15, rest:50},
-      {id:"ua_ez_curl", n:"EZ Bar Curl", sets:3, lo:10, hi:12, rest:50},
+      {id:"ua_machine_shoulder", n:"Machine Shoulder Press", sets:3, lo:10, hi:12, rest:50, note:"Shoulder-safe pick — fixed path removes AC-joint strain. Reduce range and flag Harrison if sore."},
+      {id:"ua_lat_raise", n:"Cable Lateral Raise", sets:3, lo:15, hi:15, rest:50},
+      {id:"ua_tri_push", n:"Straight-Bar Triceps Pushdown", sets:3, lo:12, hi:15, rest:50},
+      {id:"ua_preacher_curl", n:"Machine Preacher Curl", sets:3, lo:10, hi:12, rest:50},
       {id:"ua_inc_curl", n:"Seated Incline Curl", sets:3, lo:10, hi:12, rest:50}
     ]
   },
@@ -486,10 +514,11 @@ var PROGRAM = {
     main:[
       {id:"ub_pullup", n:"Pull-Ups", sets:3, lo:null, hi:null, rest:50, type:"reps", tag:"max reps"},
       {id:"ub_cable_fly", n:"Low-to-High Cable Fly", sets:3, lo:12, hi:15, rest:50, note:"Targets upper chest — the most shoulder-friendly chest movement."},
+      {id:"ub_pec_deck", n:"Pec Deck", sets:3, lo:12, hi:15, rest:50, note:"Mid and inner chest. Set hands just in front of the shoulders, not behind the torso, to protect the AC joint."},
       {id:"ub_chinup", n:"Chin-Ups", sets:3, lo:null, hi:null, rest:50, type:"reps", tag:"max reps", note:"If chin-ups cause left shoulder discomfort, substitute supinated-grip lat pulldown."},
       {id:"ub_face_pull", n:"Face Pull", sets:3, lo:20, hi:20, rest:50},
-      {id:"ub_oh_tri", n:"Cable Overhead Tricep Extension", sets:3, lo:12, hi:15, rest:50},
-      {id:"ub_rope_curl", n:"Rope Cable Curl", sets:3, lo:12, hi:15, rest:50},
+      {id:"ub_oh_tri", n:"Rope Overhead Tricep Extension", sets:3, lo:12, hi:15, rest:50, note:"Best long-head stretch."},
+      {id:"ub_hammer_curl", n:"Hammer Curl", sets:3, lo:12, hi:15, rest:50, note:"Brachialis — slightly better for growth than rope curls."},
       {id:"ub_plank_tap", n:"Straight Arm Plank Alternating Shoulder Tap", sets:3, lo:10, hi:10, rest:50, tag:"each side", type:"reps"}
     ]
   },
@@ -559,10 +588,10 @@ function defaults(){
   return {
     version:1, createdAt:new Date().toISOString(),
     workouts:[], meals:{}, weights:{},
-    quit:{ startISO:null, longestMs:0 },
+    quit:{ startISO:null, longestMs:0, days:{} },
     backup:{ lastExportISO:null },
     settings:{ summitISO:"2026-09-01", unit:"kg", theme:null },
-    ui:{ tab:"train", trainSel:null, trainDate:null, progEx:null, progMetric:"top" }
+    ui:{ tab:"train", trainSel:null, trainDate:null, progEx:null, progMetric:"top", calMonth:null }
   };
 }
 function load(){
@@ -573,6 +602,7 @@ function load(){
     // shallow merge to survive schema additions
     for(var k in def){ if(!(k in d)) d[k]=def[k]; }
     for(var s in def.settings){ if(!(s in d.settings)) d.settings[s]=def.settings[s]; }
+    if(!d.quit) d.quit = def.quit; else { for(var q in def.quit){ if(!(q in d.quit)) d.quit[q]=def.quit[q]; } }
     if(!d.ui) d.ui = def.ui; else { for(var u in def.ui){ if(!(u in d.ui)) d.ui[u]=def.ui[u]; } }
     return d;
   }catch(e){ return defaults(); }
@@ -1278,6 +1308,79 @@ function macroBar(lab, val, target, unit, color){
 /* ============================================================
    RENDER: QUIT
    ============================================================ */
+function ymd(d){ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+
+// The day-level milestones (1d, 2d, 3d, 1wk … 1yr) fall on specific calendar
+// dates counting from the streak start — this maps them onto the calendar.
+function goalpostMap(){
+  var map={}; if(!state.quit.startISO) return map;
+  var s=new Date(state.quit.startISO);
+  var base=new Date(s.getFullYear(), s.getMonth(), s.getDate());
+  MILESTONES.forEach(function(m){
+    if(m.h<24) return; // sub-day milestone (12h) has no distinct calendar day
+    var di=Math.round(m.h/24);
+    var d=new Date(base.getFullYear(), base.getMonth(), base.getDate()+di);
+    map[ymd(d)]=m;
+  });
+  return map;
+}
+
+function quitCalendar(){
+  state.quit.days = state.quit.days || {};
+  var card=el("div","card cal-card");
+  var today=new Date(), todayY=ymd(today);
+  var cy, cmo;
+  if(state.ui.calMonth){ var p=state.ui.calMonth.split("-"); cy=+p[0]; cmo=+p[1]-1; }
+  else { cy=today.getFullYear(); cmo=today.getMonth(); }
+  var first=new Date(cy,cmo,1);
+  var goals=goalpostMap();
+
+  var top=el("div","cal-top",'<div class="mo">'+esc(first.toLocaleString(undefined,{month:"long",year:"numeric"}))+'</div>');
+  var nav=el("div","cal-nav");
+  var prev=el("button",null,"‹"), next=el("button",null,"›");
+  var isCurMonth=(cy===today.getFullYear() && cmo===today.getMonth());
+  if(isCurMonth) next.disabled=true;
+  prev.onclick=function(){ var d=new Date(cy,cmo-1,1); state.ui.calMonth=d.getFullYear()+"-"+pad(d.getMonth()+1); save(); renderQuit(); };
+  next.onclick=function(){ if(isCurMonth) return; var d=new Date(cy,cmo+1,1); state.ui.calMonth=d.getFullYear()+"-"+pad(d.getMonth()+1); save(); renderQuit(); };
+  nav.appendChild(prev); nav.appendChild(next); top.appendChild(nav); card.appendChild(top);
+
+  var dow=el("div","cal-dow"); ["M","T","W","T","F","S","S"].forEach(function(x){ dow.appendChild(el("span",null,x)); });
+  card.appendChild(dow);
+
+  var grid=el("div","cal-grid");
+  var lead=(first.getDay()+6)%7; // Monday-based leading blanks
+  for(var i=0;i<lead;i++) grid.appendChild(el("div","cal-cell blank"));
+  var dim=new Date(cy,cmo+1,0).getDate();
+  for(var day=1; day<=dim; day++){
+    var d=new Date(cy,cmo,day), key=ymd(d);
+    var future=key>todayY, ticked=!!state.quit.days[key], g=goals[key];
+    var cls="cal-cell"+(future?" future":"")+(key===todayY?" today":"")+(ticked?" ticked":"")+(g?" goal-on":"");
+    var cell=el("div",cls);
+    var inner=String(day);
+    if(g) inner+='<span class="goal" title="'+esc(g.l)+'">'+g.em+'</span>';
+    if(ticked) inner+='<span class="chk">✓</span>';
+    cell.innerHTML=inner;
+    if(!future){ (function(k){ cell.onclick=function(){ if(state.quit.days[k]) delete state.quit.days[k]; else state.quit.days[k]=true; saveNow(); renderQuit(); }; })(key); }
+    grid.appendChild(cell);
+  }
+  card.appendChild(grid);
+
+  var total=Object.keys(state.quit.days).length;
+  var nextG=null, nextGDate=null;
+  Object.keys(goals).forEach(function(k){ if(k>=todayY && (!nextGDate || k<nextGDate)){ nextGDate=k; nextG=goals[k]; } });
+  var sum=el("div","cal-sum");
+  sum.innerHTML='<b>'+total+'</b> nicotine-free day'+(total===1?"":"s")+' ticked'+
+    (nextG? ' &nbsp;·&nbsp; next goalpost '+nextG.em+' <b>'+esc(nextG.l)+'</b> on '+esc(new Date(nextGDate+"T00:00:00").toLocaleDateString(undefined,{day:"numeric",month:"short"})) : '');
+  card.appendChild(sum);
+
+  var leg=el("div","cal-legend");
+  leg.innerHTML='<span><span class="cal-dot" style="background:color-mix(in srgb,var(--good) 55%,var(--surface))"></span>Ticked free</span>'+
+    '<span><span class="cal-dot" style="background:var(--surface);border:1px solid var(--accent)"></span>Today</span>'+
+    '<span>❤️ Goalpost day</span>';
+  card.appendChild(leg);
+  return card;
+}
+
 function renderQuit(){
   var v=$("#view-quit"); v.innerHTML="";
   v.appendChild(el("div","eyebrow","Nicotine-free"));
@@ -1326,6 +1429,10 @@ function renderQuit(){
   });
   v.appendChild(grid);
 
+  // tick-off calendar mapped against the goalposts
+  v.appendChild(el("div","eyebrow","Track your days"));
+  v.appendChild(quitCalendar());
+
   // controls
   var stack=el("div","stack");
   var change=el("button","btn subtle","Adjust start time");
@@ -1359,7 +1466,8 @@ function tickQuit(){
   dEl.innerHTML = days+'<span class="u">'+(days===1?"day":"days")+'</span>';
   hEl.textContent = pad(h)+":"+pad(m)+":"+pad(s);
   sEl.textContent = "Since "+new Date(start).toLocaleString(undefined,{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
-  // ----- next milestone: progress from the last one you cleared toward the next unachieved -----
+  // ----- next milestone: progress measured from the very start toward the next unachieved goal,
+  //       so the bar reads consistently before AND after each milestone (21h => 21/24 of "1 day") -----
   var elapsedH=ms/3600000, nextIdx=-1;
   for(var i=0;i<MILESTONES.length;i++){ if(elapsedH<MILESTONES[i].h){ nextIdx=i; break; } }
   var achieved = nextIdx===-1 ? MILESTONES.length : nextIdx;
@@ -1369,15 +1477,14 @@ function tickQuit(){
   if(nextIdx===-1){
     nem.textContent="🏆"; nl.textContent="All milestones cleared"; ne.textContent="";
     np.textContent="100%"; nf.style.width="100%";
-    nfrom.textContent=MILESTONES[MILESTONES.length-1].l; nto.textContent="Done";
+    nfrom.textContent="Start"; nto.textContent="Done";
   } else {
     var next=MILESTONES[nextIdx];
-    var prevH = nextIdx>0 ? MILESTONES[nextIdx-1].h : 0;
-    var pct = Math.max(0, Math.min(100, ((elapsedH-prevH)/(next.h-prevH))*100));
+    var pct = Math.max(0, Math.min(100, (elapsedH/next.h)*100));
     nem.textContent=next.em; nl.textContent=next.l;
     np.textContent=Math.floor(pct)+"%";
     nf.style.width=pct.toFixed(1)+"%";
-    nfrom.textContent = nextIdx>0 ? MILESTONES[nextIdx-1].l : "Start";
+    nfrom.textContent="Start";
     nto.textContent = next.l;
     var remMin=Math.max(0, Math.round((next.h-elapsedH)*60)), rd=Math.floor(remMin/1440), rh=Math.floor((remMin%1440)/60), rmn=remMin%60;
     ne.textContent = rd>0 ? (rd+"d "+rh+"h left") : (rh>0 ? (rh+"h "+rmn+"m left") : (rmn+"m left"));
@@ -1544,18 +1651,8 @@ function releaseWake(){ try{ if(wakeLock){ wakeLock.release(); wakeLock=null; } 
 /* ============================================================
    THEME
    ============================================================ */
-function applyTheme(){
-  if(state.settings.theme){ document.documentElement.setAttribute("data-theme", state.settings.theme); }
-  else document.documentElement.removeAttribute("data-theme");
-}
-$("#themeBtn").onclick=function(){
-  var cur=state.settings.theme;
-  if(!cur){ // infer current
-    cur = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark":"light";
-  }
-  state.settings.theme = (cur==="dark")? "light":"dark";
-  saveNow(); applyTheme();
-};
+// Single fixed theme (cream + ink) — no runtime theme switching.
+function applyTheme(){ document.documentElement.removeAttribute("data-theme"); }
 
 /* ============================================================
    NAV / BOOT
