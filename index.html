@@ -1207,23 +1207,25 @@ function weekKey(dateStr){
 function kcalRecommendation(){
   var base=TARGETS.kcal, wk=blockWeek(todayKey());
   if(wk===5) return {title:"Diet break week", sub:"Seven days at maintenance-ish intake, then back to "+base+".", kcal:DIET_BREAK_KCAL};
-  var wKeys=Object.keys(state.weights).sort();
-  var groups={};
-  wKeys.forEach(function(k){ var w=weekKey(k); (groups[w]=groups[w]||[]).push(state.weights[k]); });
-  var weeks=Object.keys(groups).sort();
-  if(weeks.length<2) return {title:"Gathering data", sub:"Weigh daily — judged on 7-day averages only.", kcal:base};
-  function avg(a){ return a.reduce(function(x,y){return x+y;},0)/a.length; }
-  // weekly loss rate between consecutive logged weeks, normalised for skipped weeks
-  function rate(i){
-    var lk=weeks[i], pk=weeks[i-1];
-    var spanW=Math.max(1, Math.round((new Date(lk+"T00:00:00")-new Date(pk+"T00:00:00"))/(7*86400000)));
-    return (avg(groups[pk])-avg(groups[lk]))/spanW;
+  // rolling 7-day windows ending today; a window only counts with enough weigh-ins to be a real average
+  var MIN_N=4, t=todayKey();
+  function win(i){ // i=0 → last 7 days, 1 → the 7 before, …
+    var vals=[];
+    for(var d=0; d<7; d++){ var k=shiftDate(t, -(i*7+d)); if(state.weights[k]!=null) vals.push(state.weights[k]); }
+    return {n:vals.length, avg: vals.length? vals.reduce(function(x,y){return x+y;},0)/vals.length : null};
   }
-  var last=rate(weeks.length-1);
-  var prev=weeks.length>=3? rate(weeks.length-2) : null;
-  if(prev!=null && last>0.6 && prev>0.6) return {title:"Losing >0.6 kg/wk two weeks running", sub:"Escalation trigger — add "+ESCALATE_KCAL+" kcal/day.", kcal:base+ESCALATE_KCAL};
-  if(last>0.6) return {title:"Fast week ("+last.toFixed(1)+" kg/wk)", sub:"Hold "+base+". If next week is also >0.6, add "+ESCALATE_KCAL+" kcal.", kcal:base};
-  return {title:(last>=0?"Losing ":"Gaining ")+Math.abs(last).toFixed(1)+" kg/wk", sub:"Hold the plan. Judge on 7-day averages only.", kcal:base};
+  var w0=win(0), w1=win(1), w2=win(2);
+  if(w0.n<MIN_N || w1.n<MIN_N){
+    var need = w1.n<MIN_N ? "Needs "+MIN_N+"+ weigh-ins in each of two back-to-back weeks — this week "+w0.n+", last week "+w1.n+"."
+                          : "This week: "+w0.n+"/"+MIN_N+" weigh-ins so far.";
+    return {title:"Not enough weigh-ins for a trend", sub:need+" Weigh daily.", kcal:base};
+  }
+  var last=w1.avg-w0.avg; // kg lost over the last week (7-day avg vs 7-day avg)
+  var prev=(w2.n>=MIN_N)? w2.avg-w1.avg : null;
+  var avgTxt=" (7-day avg "+w0.avg.toFixed(1)+" vs "+w1.avg.toFixed(1)+")";
+  if(prev!=null && last>0.6 && prev>0.6) return {title:"Losing >0.6 kg/wk two weeks running", sub:"Escalation trigger — add "+ESCALATE_KCAL+" kcal/day."+avgTxt, kcal:base+ESCALATE_KCAL};
+  if(last>0.6) return {title:"Fast week ("+last.toFixed(1)+" kg/wk)", sub:"Hold "+base+". If next week is also >0.6, add "+ESCALATE_KCAL+" kcal."+avgTxt, kcal:base};
+  return {title:(last>=0?"Losing ":"Gaining ")+Math.abs(last).toFixed(1)+" kg/wk", sub:"Hold the plan."+avgTxt, kcal:base};
 }
 
 /* ---- tiny SVG line chart ---- */
