@@ -1,5 +1,5 @@
 // Fierro offline shell. Bump CACHE on every redeploy so updates propagate.
-const CACHE = "fierro-v9";
+const CACHE = "fierro-v10";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest",
   "./icon-180.png", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png"];
 
