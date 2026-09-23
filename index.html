@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-192.png">
-<title>Fierro · Kilimanjaro Trainer</title>
+<title>Fierro</title>
 <style>
   /* ---------- Tokens ---------- */
   /* Single fixed theme — cream paper + near-black ink, matching the app icon.
@@ -63,11 +63,11 @@
     background:var(--surface); border:1px solid var(--border); color:var(--dim);
     width:34px; height:34px; border-radius:9px; display:grid; place-items:center;
   }
-  .summit{margin-top:10px}
-  .summit .row{display:flex; justify-content:space-between; align-items:baseline; font-size:11px; letter-spacing:.06em; color:var(--dim); text-transform:uppercase}
-  .summit .row b{color:var(--text); font-weight:700}
-  .summit .rail{height:5px; border-radius:99px; background:var(--surface-2); margin-top:6px; overflow:hidden; border:1px solid var(--border)}
-  .summit .fill{height:100%; background:linear-gradient(90deg,var(--cool),var(--accent)); border-radius:99px}
+  .blockbar{margin-top:10px}
+  .blockbar .row{display:flex; justify-content:space-between; align-items:baseline; font-size:11px; letter-spacing:.06em; color:var(--dim); text-transform:uppercase}
+  .blockbar .row b{color:var(--text); font-weight:700}
+  .blockbar .rail{height:5px; border-radius:99px; background:var(--surface-2); margin-top:6px; overflow:hidden; border:1px solid var(--border)}
+  .blockbar .fill{height:100%; background:linear-gradient(90deg,var(--cool),var(--accent)); border-radius:99px}
 
   /* ---------- Sections / cards ---------- */
   main{padding:16px 14px 8px}
@@ -158,14 +158,9 @@
   }
   .mini-btn.rest{border-style:solid; color:var(--cool); border-color:color-mix(in srgb,var(--cool) 40%,transparent)}
 
-  /* cardio */
-  .cardio-block{display:flex; flex-direction:column; gap:10px; margin-top:12px}
-  .cardio-row{display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:13px}
-  .cardio-row .ci{flex:1}
-  .cardio-row .ci .n{font-weight:700; font-size:14.5px}
-  .cardio-row .ci .d{font-size:11.5px; color:var(--dim); margin-top:2px}
-  .cardio-row input{width:66px; background:var(--bg-2); border:1px solid var(--border); color:var(--text); border-radius:9px; padding:10px; text-align:center; font-family:var(--font-mono); font-size:16px}
-  .cardio-row .unit{font-size:11px; color:var(--faint); width:26px}
+  /* weekly schedule */
+  .sched-row{align-items:center}
+  .sched-sel{flex:0 0 auto; max-width:64%; background:var(--bg-2); border:1px solid var(--border); color:var(--text); border-radius:9px; padding:7px 8px; font:inherit; font-size:13px}
 
   /* buttons */
   .btn{display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:14px; border-radius:14px; border:none; font-size:15px; font-weight:800; letter-spacing:.02em}
@@ -411,13 +406,13 @@
         <svg class="peak" viewBox="12 12 76 76" fill="none" aria-hidden="true"><rect x="23" y="33" width="3" height="34" fill="currentColor"/><rect x="32.5" y="39.5" width="3" height="21" fill="currentColor"/><rect x="74" y="33" width="3" height="34" fill="currentColor"/><rect x="64.5" y="39.5" width="3" height="21" fill="currentColor"/><rect x="41.2" y="48.5" width="17.6" height="3" fill="currentColor"/></svg>
         <div>
           <h1>Fierro</h1>
-          <div class="sub">Kilimanjaro Prep</div>
+          <div class="sub">Body Recomp</div>
         </div>
       </div>
     </div>
-    <div class="summit">
-      <div class="row"><span>To summit</span><span><b id="summitDays">—</b> days</span></div>
-      <div class="rail"><div class="fill" id="summitFill" style="width:0%"></div></div>
+    <div class="blockbar">
+      <div class="row"><span id="blockLbl">Block</span><span><b id="blockWeek">—</b></span></div>
+      <div class="rail"><div class="fill" id="blockFill" style="width:0%"></div></div>
     </div>
   </header>
 
@@ -454,116 +449,148 @@
 "use strict";
 
 /* ============================================================
-   PROGRAM DEFINITION  (from Training Plan vf.pdf)
+   PROGRAM DEFINITION  (Body Recomposition plan, block from 20 Sept 2026)
+   Exercise ids are kept where the movement is unchanged so logged history carries over.
    ============================================================ */
 var PROGRAM = {
   UpperA: {
-    label:"Upper A", full:"Balanced Push + Pull", day:"Monday", dur:"~60 min",
-    tagline:"Every upper-body group trained twice/week — the key driver for building muscle in a deficit.",
+    label:"Upper A", full:"Horizontal · Heavy", dur:"~60 min",
+    tagline:"Heavy horizontal push + pull. Short on time? Superset the curls with the triceps work.",
     rehab:{ mins:7, items:[
       {id:"stab", n:"Shoulder Stabiliser Band Movements", d:"2 × 15 reps"},
       {id:"wallslide", n:"Resisted GHjt ER Flexion Wall Slides", d:"2 × 10 reps"},
       {id:"scaption", n:"Scaption with Dumbbell", d:"2 × 12 reps"}
     ]},
     main:[
-      {id:"ua_machine_incline_press", n:"Machine Incline Chest Press", sets:3, lo:8, hi:10, rest:50, note:"Machine/fixed path — shoulder-safe pick that removes AC-joint strain vs free-weight pressing."},
-      {id:"ua_htl_fly", n:"High-to-Low Cable Fly", sets:3, lo:12, hi:15, rest:50, note:"Lower chest — the region previously missing, from a shoulder-friendly cable angle."},
-      {id:"ua_seated_row", n:"Seated Row Machine", sets:3, lo:10, hi:12, rest:50},
-      {id:"ua_machine_shoulder", n:"Machine Shoulder Press", sets:3, lo:10, hi:12, rest:50, note:"Shoulder-safe pick — fixed path removes AC-joint strain. Reduce range and flag Harrison if sore."},
-      {id:"ua_lat_raise", n:"Cable Lateral Raise", sets:3, lo:15, hi:15, rest:50},
-      {id:"ua_tri_push", n:"Straight-Bar Triceps Pushdown", sets:3, lo:12, hi:15, rest:50},
-      {id:"ua_preacher_curl", n:"Machine Preacher Curl", sets:3, lo:10, hi:12, rest:50},
-      {id:"ua_inc_curl", n:"Seated Incline Curl", sets:3, lo:10, hi:12, rest:50}
+      {id:"ua_incline_press", n:"Incline DB Press", sets:4, lo:6, hi:8, rest:50},
+      {id:"ua_cs_row", n:"Chest-Supported DB Row", sets:4, lo:8, hi:10, rest:50},
+      {id:"ua_db_shoulder", n:"DB Shoulder Press", sets:3, lo:8, hi:10, rest:50, tag:"seated, back supported", note:"If it aggravates the AC joint, reduce range and flag Harrison."},
+      {id:"ua_lat_raise", n:"Cable Lateral Raise", sets:3, lo:12, hi:15, rest:50},
+      {id:"ua_oh_tri", n:"Cable Overhead Triceps Extension", sets:3, lo:10, hi:12, rest:50},
+      {id:"ua_inc_curl", n:"Incline DB Curl", sets:3, lo:10, hi:12, rest:50}
     ]
   },
   LowerA: {
-    label:"Lower A", full:"Quad Focus", day:"Tuesday", dur:"~60 min",
-    tagline:"DB Step-Ups are your most Kilimanjaro-specific lift — progress weight weekly.",
+    label:"Lower A", full:"Squat", dur:"~55 min",
+    tagline:"Squat day. Double progression: every set at the top of the range → add weight, drop to the bottom.",
     rehab:{ mins:6, items:[
       {id:"ir_abd", n:"Internal Rotation from Abduction", d:"2 × 12 each side"},
       {id:"bodyblade", n:"Bodyblade", d:"2 × 30 sec"},
       {id:"stab", n:"Shoulder Stabiliser Band Movements", d:"2 × 15 reps"}
     ]},
     main:[
-      {id:"la_leg_press", n:"Leg Press", sets:4, lo:10, hi:12, rest:50},
-      {id:"la_rdl", n:"Romanian Deadlift", sets:3, lo:10, hi:12, rest:50},
-      {id:"la_leg_ext", n:"Leg Extension", sets:3, lo:12, hi:15, rest:50},
-      {id:"la_leg_curl", n:"Leg Curl", sets:3, lo:12, hi:15, rest:50},
-      {id:"la_step_up", n:"DB Step-Ups", sets:3, lo:12, hi:12, rest:50, tag:"each leg", note:"Your most Kilimanjaro-specific exercise. Progress weight weekly."},
-      {id:"la_calf", n:"Calf Raise", sets:3, lo:20, hi:20, rest:50},
-      {id:"la_woodchop", n:"Cable Woodchops", sets:3, lo:12, hi:12, rest:50, tag:"each side"},
-      {id:"la_side_plank", n:"Side Plank", sets:3, lo:40, hi:40, rest:0, tag:"each side", type:"duration"}
-    ]
-  },
-  Cardio: {
-    label:"Cardio", full:"Zone 2 + Steady State", day:"Wed / Sat", dur:"50 min",
-    tagline:"No rehab warm-up needed. Add 5 min to the stair block every 2 weeks — target 45 min continuous by late August.",
-    cardio:[
-      {id:"zone2", n:"Zone 2 Run", d:"Conversational pace — you can hold a sentence throughout", target:25},
-      {id:"stair", n:"Stair Climber / Incline Treadmill (10%)", d:"Steady state, not a sprint", target:25}
+      {id:"la_back_squat", n:"Barbell Back Squat", sets:4, lo:5, hi:8, rest:50},
+      {id:"la_rdl", n:"Romanian Deadlift", sets:3, lo:8, hi:10, rest:50},
+      {id:"la_leg_press", n:"Leg Press", sets:3, lo:10, hi:12, rest:50},
+      {id:"la_leg_curl", n:"Seated Leg Curl", sets:3, lo:10, hi:12, rest:50},
+      {id:"la_calf", n:"Standing Calf Raise", sets:3, lo:10, hi:12, rest:50}
     ]
   },
   UpperB: {
-    label:"Upper B", full:"Balanced Pull + Push", day:"Thursday", dur:"~60 min",
-    tagline:"Pull-Ups & Chin-Ups: if max reps < 5, use a band until you can hit 6–8 unassisted per set.",
+    label:"Upper B", full:"Vertical", dur:"~60 min",
+    tagline:"Vertical pull + push. Short on time? Superset the curls with the triceps work.",
     rehab:{ mins:7, items:[
       {id:"ir_abd", n:"Internal Rotation from Abduction", d:"2 × 12 each side"},
       {id:"wallslide", n:"Resisted GHjt ER Flexion Wall Slides", d:"2 × 10 reps"},
       {id:"scaption", n:"Scaption with Dumbbell", d:"2 × 12 reps"}
     ]},
     main:[
-      {id:"ub_pullup", n:"Pull-Ups", sets:3, lo:null, hi:null, rest:50, type:"reps", tag:"max reps"},
-      {id:"ub_cable_fly", n:"Low-to-High Cable Fly", sets:3, lo:12, hi:15, rest:50, note:"Targets upper chest — the most shoulder-friendly chest movement."},
-      {id:"ub_pec_deck", n:"Pec Deck", sets:3, lo:12, hi:15, rest:50, note:"Mid and inner chest. Set hands just in front of the shoulders, not behind the torso, to protect the AC joint."},
-      {id:"ub_chinup", n:"Chin-Ups", sets:3, lo:null, hi:null, rest:50, type:"reps", tag:"max reps", note:"If chin-ups cause left shoulder discomfort, substitute supinated-grip lat pulldown."},
-      {id:"ub_face_pull", n:"Face Pull", sets:3, lo:20, hi:20, rest:50},
-      {id:"ub_oh_tri", n:"Rope Overhead Tricep Extension", sets:3, lo:12, hi:15, rest:50, note:"Best long-head stretch."},
-      {id:"ub_hammer_curl", n:"Hammer Curl", sets:3, lo:12, hi:15, rest:50, note:"Brachialis — slightly better for growth than rope curls."},
-      {id:"ub_plank_tap", n:"Straight Arm Plank Alternating Shoulder Tap", sets:3, lo:10, hi:10, rest:50, tag:"each side", type:"reps"}
+      {id:"ub_pullup", n:"Pull-Up", sets:4, lo:6, hi:10, rest:50, type:"reps", note:"Log added weight in ±kg once you clear 10 on every set."},
+      {id:"ub_flat_press", n:"Flat DB Press", sets:4, lo:8, hi:10, rest:50},
+      {id:"ub_tbar_row", n:"T-Bar Row", sets:3, lo:10, hi:12, rest:50, tag:"neutral close-grip handle"},
+      {id:"ub_lat_raise", n:"Cable Lateral Raise", sets:3, lo:12, hi:15, rest:50},
+      {id:"ub_oh_tri", n:"Cable Overhead Triceps Extension", sets:3, lo:12, hi:15, rest:50},
+      {id:"ub_inc_curl", n:"Incline DB Curl", sets:3, lo:10, hi:12, rest:50}
     ]
   },
   LowerB: {
-    label:"Lower B", full:"Posterior Chain", day:"Friday", dur:"~58 min",
-    tagline:"Hamstrings & glutes get the strongest progress this week. RDLs go heavier than Tuesday.",
+    label:"Lower B", full:"Hinge", dur:"~60 min",
+    tagline:"Hinge day. Trap bar is the main lift — add weight once all 4 sets hit 8.",
     rehab:{ mins:6, items:[
       {id:"stab", n:"Shoulder Stabiliser Band Movements", d:"2 × 15 reps"},
       {id:"bodyblade", n:"Bodyblade", d:"2 × 30 sec"},
       {id:"scaption", n:"Scaption with Dumbbell", d:"2 × 12 reps"}
     ]},
     main:[
-      {id:"lb_rdl", n:"Romanian Deadlift", sets:4, lo:8, hi:10, rest:50, tag:"heavier than Tue"},
-      {id:"lb_bss", n:"Bulgarian Split Squat", sets:3, lo:10, hi:12, rest:50, tag:"each leg"},
-      {id:"lb_hip_thrust", n:"Hip Thrust (Barbell)", sets:3, lo:12, hi:15, rest:50},
-      {id:"lb_leg_curl", n:"Leg Curl", sets:4, lo:12, hi:15, rest:50},
-      {id:"lb_calf", n:"Calf Raise", sets:3, lo:20, hi:20, rest:50},
-      {id:"lb_pallof", n:"Cable Pallof Rotation", sets:3, lo:10, hi:10, rest:50, tag:"each side"}
+      {id:"lb_trap_dl", n:"Trap Bar Deadlift", sets:4, lo:5, hi:8, rest:50},
+      {id:"lb_bss", n:"Bulgarian Split Squat", sets:3, lo:8, hi:10, rest:50, tag:"each leg"},
+      {id:"lb_leg_ext", n:"Leg Extension", sets:3, lo:12, hi:15, rest:50},
+      {id:"lb_leg_curl", n:"Seated Leg Curl", sets:3, lo:10, hi:12, rest:50},
+      {id:"lb_seated_calf", n:"Seated Calf Raise", sets:3, lo:12, hi:15, rest:50},
+      {id:"lb_cable_crunch", n:"Cable Crunch", sets:3, lo:12, hi:15, rest:50}
     ]
   },
-  Rest: { label:"Rest", full:"Recovery + Batch Cook", day:"Sunday", dur:"—" }
+  UpperC: {
+    label:"Upper C", full:"Delts · Arms · Chest Stretch", dur:"~45 min",
+    tagline:"Pump day for side delts, arms and chest stretch. Controlled reps, full range.",
+    rehab:{ mins:7, items:[
+      {id:"stab", n:"Shoulder Stabiliser Band Movements", d:"2 × 15 reps"},
+      {id:"ir_abd", n:"Internal Rotation from Abduction", d:"2 × 12 each side"},
+      {id:"wallslide", n:"Resisted GHjt ER Flexion Wall Slides", d:"2 × 10 reps"}
+    ]},
+    main:[
+      {id:"uc_cable_fly", n:"Low-to-High Cable Fly", sets:4, lo:12, hi:15, rest:50},
+      {id:"uc_lat_raise", n:"Cable Lateral Raise", sets:4, lo:12, hi:15, rest:50},
+      {id:"uc_face_pull", n:"Face Pull", sets:3, lo:15, hi:20, rest:50},
+      {id:"uc_tri_push", n:"Triceps Pushdown", sets:3, lo:12, hi:15, rest:50},
+      {id:"uc_preacher_curl", n:"Machine Preacher Curl", sets:3, lo:10, hi:12, rest:50}
+    ]
+  },
+  Rest: { label:"Rest", full:"Recovery", dur:"—" }
 };
-var DOW = [ "Rest","UpperA","LowerA","Cardio","UpperB","LowerB","Cardio" ]; // 0=Sun..6=Sat
-var SESSION_ORDER = ["UpperA","LowerA","Cardio","UpperB","LowerB","Rest"];
+var SESSION_ORDER = ["UpperA","LowerA","UpperB","LowerB","UpperC","Rest"];
+var LIFT_SESSIONS = ["UpperA","LowerA","UpperB","LowerB","UpperC"];
+// default week (0=Sun..6=Sat) — editable in the Train tab, stored in state.settings.schedule
+var DEFAULT_SCHEDULE = [ "Rest","UpperA","LowerA","UpperB","Rest","LowerB","UpperC" ];
+var DAY_SHORT = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+function sessionFor(dateKey){
+  var sc=state.settings.schedule||DEFAULT_SCHEDULE;
+  var k=sc[new Date(dateKey+"T00:00:00").getDay()];
+  return PROGRAM[k]? k : "Rest";
+}
+function daysFor(key){
+  var sc=state.settings.schedule||DEFAULT_SCHEDULE, out=[];
+  [1,2,3,4,5,6,0].forEach(function(d){ if(sc[d]===key) out.push(DAY_SHORT[d]); });
+  return out.length? out.join(" / ") : "Not scheduled";
+}
+
+/* ---- 6-week block ---- */
+var BLOCK_WEEKS = 6;
+function blockWeek(dateKey){
+  var st=new Date((state.settings.blockStartISO||"2026-09-20")+"T00:00:00");
+  var d=new Date(dateKey+"T00:00:00");
+  var days=Math.floor((d-st)/86400000);
+  return days<0? 0 : Math.floor(days/7)+1;
+}
+function blockNote(wk){
+  if(wk===1) return {t:"Week 1 · Ramp-in", d:"Train at ~80% of your working loads. Full loads from week 2."};
+  if(wk===5) return {t:"Week 5 · Diet break", d:"Seven days at 2,300 kcal. Training unchanged."};
+  if(wk===6) return {t:"Week 6 · Deload", d:"60% load, same sets and reps."};
+  return null;
+}
 
 var MEALS = [
-  {id:"m1", n:"Breakfast", t:"7–8am", kcal:406, p:24.5, c:27, f:20, note:"Eggs cooked fresh. Apple from the bowl. No prep.",
-   ing:[["Whole eggs","4 eggs"],["Green apple","1 medium (180g)"]]},
-  {id:"m2", n:"Lunch", t:"12–1pm", kcal:533, p:58, c:45, f:12, note:"Pre-portioned container from fridge. Add olive oil fresh.",
-   ing:[["Chicken breast (cooked)","160g"],["Sweet potato (cooked)","200g"],["Tenderstem broccoli","150g"],["Olive oil","5ml"]]},
-  {id:"m3", n:"Afternoon Snack", t:"4–5pm", kcal:194, p:4, c:30, f:8, note:"Grab and go.",
-   ing:[["Banana","1 medium (120g)"],["Almonds","15g"]]},
-  {id:"m4", n:"Dinner", t:"7–8pm", kcal:533, p:58, c:45, f:12, note:"Identical to lunch. Add olive oil fresh.",
-   ing:[["Chicken breast (cooked)","160g"],["Sweet potato (cooked)","200g"],["Tenderstem broccoli","150g"],["Olive oil","5ml"]]},
-  {id:"m5", n:"Evening Snack", t:"9–9:30pm", kcal:118, p:20, c:7, f:1, note:"Straight from the fridge.",
-   ing:[["Greek yogurt 0% fat","200g"]]}
+  {id:"m1", n:"Breakfast", t:"Morning", kcal:365, p:34, c:21, f:15, note:"Eggs cooked fresh. Apple on the side.",
+   ing:[["Medium eggs","3"],["Egg whites","150g"],["Green apple","1 (~150g)"]]},
+  {id:"m2", n:"Lunch", t:"Midday", kcal:460, p:52, c:32, f:11, note:"Weigh raw where possible. Keep a sweet-potato meal within ~2h after training.",
+   ing:[["Chicken breast","200g raw (~174g cooked)"],["Sweet potato","150g raw (~128g cooked)"],["Tenderstem broccoli","150g raw (~128g cooked)"],["Olive oil","7ml"]]},
+  {id:"m3", n:"Pre-workout Snack", t:"60–90 min pre-training", kcal:250, p:6, c:32, f:14, note:"Eat 60–90 min before you train.",
+   ing:[["Banana","1 (~120g peeled)"],["Almonds","25g"]]},
+  {id:"m4", n:"Dinner", t:"Evening", kcal:460, p:52, c:32, f:11, note:"Identical to lunch.",
+   ing:[["Chicken breast","200g raw (~174g cooked)"],["Sweet potato","150g raw (~128g cooked)"],["Tenderstem broccoli","150g raw (~128g cooked)"],["Olive oil","7ml"]]},
+  {id:"m5", n:"Evening", t:"Before bed", kcal:165, p:30, c:11, f:0, note:"Straight from the fridge.",
+   ing:[["Greek yogurt 0% fat","300g"]]}
 ];
-var TARGETS = {kcal:1784, p:167, c:154, f:53};
-var SEASONING = ["Whatever you feel like","Garlic and lemon","Smoked paprika and cumin","Soy sauce and ginger (after reheating)","Italian herbs","Chilli flakes and lime","Whatever you feel like"];
+var TARGETS = {kcal:1700, p:174, c:128, f:51};
+var DIET_BREAK_KCAL = 2300, ESCALATE_KCAL = 150;
 var SHOPPING = [
-  ["Chicken breast","2.6 kg raw"],["Sweet potato","3.5 kg raw"],["Tenderstem broccoli","2.6 kg raw"],
-  ["Green apple","7"],["Whole eggs","28 (3×10)"],["Greek yogurt 0%","1.4 kg"],["Banana","7"],["Almonds","110g"],["Olive oil","70ml"]
+  ["Chicken breast","2.8 kg raw"],["Sweet potato","2.1 kg raw"],["Tenderstem broccoli","2.1 kg raw"],
+  ["Medium eggs","21"],["Egg whites","1.05 kg"],["Green apple","7"],["Greek yogurt 0%","2.1 kg"],
+  ["Banana","7"],["Almonds","175g"],["Olive oil","~100ml"]
 ];
-var PROJ = [
-  ["Now (Jun 23)","73 kg","22%"],["Week 6 (Aug 4)","~71 kg","19–20%"],["Kilimanjaro (Sep)","69–70 kg","16–18%"]
+var CHECKPOINTS = [
+  ["Start · 20 Sept","~73 kg","20–22%"],["DEXA baseline · wk of 22 Sept","BodyScan W1",""],
+  ["Madrid · 10–13 Oct","Off plan","resume Mon"],["DEXA #2 · mid-Dec","",""],["Target","","12–15%"]
 ];
 var MILESTONES = [
   {h:12, em:"🫁", l:"12 hours", d:"Blood oxygen normalising"},
@@ -572,7 +599,7 @@ var MILESTONES = [
   {h:72, em:"🌬️", l:"3 days", d:"Nicotine fully cleared"},
   {h:168, em:"⚡", l:"1 week", d:"Cravings less frequent"},
   {h:336, em:"🩸", l:"2 weeks", d:"Circulation improving"},
-  {h:720, em:"🏔️", l:"1 month", d:"Lung function climbing"},
+  {h:720, em:"🌿", l:"1 month", d:"Lung function climbing"},
   {h:2160, em:"💪", l:"3 months", d:"Endurance noticeably better"},
   {h:4320, em:"🫀", l:"6 months", d:"Coughing & breathlessness ease"},
   {h:8760, em:"🏆", l:"1 year", d:"Heart-disease risk halved"}
@@ -590,7 +617,7 @@ function defaults(){
     workouts:[], meals:{}, weights:{},
     quit:{ startISO:null, longestMs:0, days:{} },
     backup:{ lastExportISO:null },
-    settings:{ summitISO:"2026-09-01", unit:"kg", theme:null },
+    settings:{ blockStartISO:"2026-09-20", schedule:DEFAULT_SCHEDULE.slice(), unit:"kg", theme:null },
     ui:{ tab:"train", trainSel:null, trainDate:null, progEx:null, progMetric:"top", calMonth:null }
   };
 }
@@ -601,7 +628,9 @@ function load(){
     var d = JSON.parse(raw); var def = defaults();
     // shallow merge to survive schema additions
     for(var k in def){ if(!(k in d)) d[k]=def[k]; }
+    if(!d.settings) d.settings=def.settings;
     for(var s in def.settings){ if(!(s in d.settings)) d.settings[s]=def.settings[s]; }
+    delete d.settings.blockbarISO;
     if(!d.quit) d.quit = def.quit; else { for(var q in def.quit){ if(!(q in d.quit)) d.quit[q]=def.quit[q]; } }
     if(!d.ui) d.ui = def.ui; else { for(var u in def.ui){ if(!(u in d.ui)) d.ui[u]=def.ui[u]; } }
     return d;
@@ -665,8 +694,7 @@ function renderTrain(){
   var v=$("#view-train"); v.innerHTML="";
   var dk = curDate();
   var isToday = (dk===todayKey());
-  var dowName = DOW[new Date(dk+"T00:00:00").getDay()];
-  if(state.ui.trainSel==null) state.ui.trainSel = dowName;
+  if(state.ui.trainSel==null || !PROGRAM[state.ui.trainSel]) state.ui.trainSel = defaultSel(dk);
   var sel = state.ui.trainSel;
 
   v.appendChild(el("div","eyebrow", (isToday?"Today":relDay(dk).toUpperCase())+" · "+new Date(dk+"T00:00:00").toLocaleDateString(undefined,{weekday:"long"})));
@@ -675,7 +703,10 @@ function renderTrain(){
 
   // this-week adherence + date navigator
   v.appendChild(weekStrip());
+  v.appendChild(scheduleCard());
   v.appendChild(dateBar());
+  var bn=blockNote(blockWeek(dk));
+  if(bn){ var bnote=el("div","season"); bnote.innerHTML='📌 <b>'+esc(bn.t)+'</b> — '+esc(bn.d); v.appendChild(bnote); }
 
   // session chips
   var chips=el("div","chips");
@@ -692,12 +723,12 @@ function renderTrain(){
   // header of session
   var sh=el("div","sesshead");
   sh.innerHTML='<div><div class="name">'+esc(P.label)+'</div><div class="tagline">'+esc(P.full)+'</div></div>'
-    +'<div class="meta">'+esc(P.day)+' · '+esc(P.dur)+'</div>';
+    +'<div class="meta">'+esc(daysFor(sel))+' · '+esc(P.dur)+'</div>';
   v.appendChild(sh);
 
   if(sel==="Rest"){
     var rd=el("div","card rest-day");
-    rd.innerHTML='<div class="big">🛌</div><h3>Rest &amp; Batch Cook</h3><p>No training today. Recover, and if it’s Sunday, batch-cook the week (see the Fuel tab for both cooking options).</p>';
+    rd.innerHTML='<div class="big">🛌</div><h3>Rest &amp; Recover</h3><p>No lifting today. Still hit 8–10k steps and 7+ hours of sleep. Batch-cook day? See the Fuel tab. Tap a split above if you’re training anyway.</p>';
     v.appendChild(rd);
     return;
   }
@@ -706,8 +737,6 @@ function renderTrain(){
 
   var wk = getWorkout(dk, sel, false); // may be null until first input
   var prior = priorWorkout(sel, dk);
-
-  if(sel==="Cardio"){ renderCardio(v, P, prior); return; }
 
   // Rehab warm-up
   if(P.rehab){
@@ -742,7 +771,7 @@ function renderTrain(){
       var prs=sessionPRs(w, sel);
       if(prs.length){
         try{ if(navigator.vibrate) navigator.vibrate(200); }catch(e){}
-        setTimeout(function(){ toast(prs.length===1? ("New PR · "+prs[0]+" 🏔️") : (prs.length+" new PRs 🏔️")); }, 320);
+        setTimeout(function(){ toast(prs.length===1? ("New PR · "+prs[0]+" 🔥") : (prs.length+" new PRs 🔥")); }, 320);
       }
     }
     w.done=!w.done; saveNow();
@@ -750,6 +779,53 @@ function renderTrain(){
   };
   stack.appendChild(fin);
   v.appendChild(stack);
+  v.appendChild(trainingRules());
+}
+
+function trainingRules(){
+  var d=el("details","ref");
+  d.innerHTML='<summary>Training Rules <span class="ic">⌄</span></summary>';
+  var c=el("div","rc");
+  c.innerHTML=
+    '<div class="li"><span><b>Double progression</b> — hit the top of the rep range on every set, then add weight and drop to the bottom of the range.</span></div>'+
+    '<div class="li"><span><b>Fixed template</b> for the 6-week block. Only swap an exercise if it aggravates the shoulder or stalls for 3+ weeks.</span></div>'+
+    '<div class="li"><span><b>Rehab warm-up</b> before every session. 50s rest on all working sets.</span></div>'+
+    '<div class="li"><span><b>Short on time</b> — superset curls with triceps work on upper days.</span></div>'+
+    '<div class="li"><span><b>Week 1</b> at 80% loads · <b>Week 5</b> diet break · <b>Week 6</b> deload at 60%, same sets &amp; reps.</span></div>'+
+    '<div class="li"><span><b>Daily</b> — 8–10k steps, 7+ hours sleep.</span></div>';
+  d.appendChild(c); return d;
+}
+
+// session to show for a date: whatever you already logged there, else your schedule
+function defaultSel(dk){
+  for(var i=state.workouts.length-1;i>=0;i--){ var w=state.workouts[i]; if(w.date===dk && PROGRAM[w.session] && w.session!=="Rest") return w.session; }
+  return sessionFor(dk);
+}
+
+/* ---- editable weekly schedule ---- */
+function scheduleCard(){
+  var d=el("details","ref");
+  d.innerHTML='<summary>My Week · '+esc([1,2,3,4,5,6,0].map(function(i){ var k=(state.settings.schedule||DEFAULT_SCHEDULE)[i]; return k==="Rest"?"–":PROGRAM[k].label.replace(/[a-z ]/g,""); }).join(" "))+' <span class="ic">⌄</span></summary>';
+  if(state.ui.schedOpen) d.open=true;
+  d.addEventListener("toggle", function(){ state.ui.schedOpen=d.open; });
+  var c=el("div","rc");
+  c.appendChild(el("div",null,'<div style="color:var(--faint);font-size:11.5px;padding-bottom:4px">Pick which split you do on each day. You can still switch split on any day with the buttons below.</div>'));
+  [1,2,3,4,5,6,0].forEach(function(i){
+    var row=el("div","li sched-row");
+    row.appendChild(el("span",null,'<b>'+DAY_SHORT[i]+'</b>'));
+    var sl=document.createElement("select"); sl.className="sched-sel"; sl.setAttribute("aria-label",DAY_SHORT[i]+" split");
+    SESSION_ORDER.forEach(function(k){ var o=document.createElement("option"); o.value=k; o.textContent=PROGRAM[k].label+(k==="Rest"?"":" · "+PROGRAM[k].full.split(" · ")[0]); sl.appendChild(o); });
+    sl.value=(state.settings.schedule||DEFAULT_SCHEDULE)[i];
+    sl.onchange=function(){
+      if(!state.settings.schedule) state.settings.schedule=DEFAULT_SCHEDULE.slice();
+      state.settings.schedule[i]=sl.value; state.ui.trainSel=null; state.ui.schedOpen=true; saveNow(); renderTrain(); toast(DAY_SHORT[i]+" → "+PROGRAM[sl.value].label);
+    };
+    row.appendChild(sl); c.appendChild(row);
+  });
+  var rs=el("button","mini-btn","Reset to plan default"); rs.style.marginTop="10px";
+  rs.onclick=function(){ state.settings.schedule=DEFAULT_SCHEDULE.slice(); state.ui.trainSel=null; state.ui.schedOpen=true; saveNow(); renderTrain(); toast("Schedule reset"); };
+  c.appendChild(rs);
+  d.appendChild(c); return d;
 }
 
 function exerciseCard(ex, session, wk, prior){
@@ -760,7 +836,7 @@ function exerciseCard(ex, session, wk, prior){
 
   // rx string
   var rx;
-  if(type==="reps") rx = ex.sets+" sets · "+(ex.tag&&ex.tag.indexOf("max")>=0?"max reps":(ex.lo!=null?repRange(ex):"reps"));
+  if(type==="reps") rx = ex.sets+" × "+(ex.tag&&ex.tag.indexOf("max")>=0?"max reps":(ex.lo!=null?repRange(ex):"reps"));
   else if(type==="duration") rx = ex.sets+" × "+ex.lo+" sec";
   else rx = ex.sets+" × "+repRange(ex);
   var restStr = ex.rest? ex.rest+"s rest" : "no rest";
@@ -875,30 +951,6 @@ function readyToProgress(ex, priorLog){
   return any && all;
 }
 
-function renderCardio(v, P, prior){
-  var block=el("div","cardio-block");
-  var wk=getWorkout(curDate(),"Cardio",false);
-  P.cardio.forEach(function(c){
-    var row=el("div","cardio-row");
-    var val = wk && wk.cardio[c.id]!=null ? wk.cardio[c.id] : "";
-    row.innerHTML='<div class="ci"><div class="n">'+esc(c.n)+'</div><div class="d">'+esc(c.d)+'</div></div>';
-    var inp=document.createElement("input"); inp.type="number"; inp.inputMode="numeric"; inp.value=val; inp.placeholder=String(c.target);
-    inp.oninput=function(){ var w=getWorkout(curDate(),"Cardio",true); w.cardio[c.id]= inp.value===""?null:parseFloat(inp.value); save(); };
-    row.appendChild(inp);
-    row.appendChild(el("div","unit","min"));
-    block.appendChild(row);
-  });
-  v.appendChild(block);
-  if(prior && prior.cardio){
-    var tot=0; for(var k in prior.cardio){ if(prior.cardio[k]) tot+=prior.cardio[k]; }
-    if(tot){ var pr=el("div","note"); pr.style.margin="12px 0 0"; pr.innerHTML="Last cardio ("+esc(fmtDate(prior.date))+"): <b>"+tot+" min</b> total."; v.appendChild(pr); }
-  }
-  var stack=el("div","stack");
-  var fin=el("button","btn primary", (wk&&wk.done?"✓ Logged — Edit":"✓ Log Cardio"));
-  fin.onclick=function(){ var w=getWorkout(curDate(),"Cardio",true); w.done=!w.done; saveNow(); toast(w.done?"Cardio logged 🏃":"Reopened"); renderTrain(); };
-  stack.appendChild(fin); v.appendChild(stack);
-}
-
 function openDetails(){ var d=$("#view-train .rehab"); if(d) d.open=true; }
 
 /* ---- date navigator (log / edit any day) ---- */
@@ -920,7 +972,7 @@ function dateBar(){
 }
 function gotoDate(key){
   state.ui.trainDate = (key===todayKey()) ? null : key;
-  state.ui.trainSel = DOW[new Date(key+"T00:00:00").getDay()]; // default to that day's scheduled session
+  state.ui.trainSel = defaultSel(key); // what you logged that day, else that day's scheduled split
   save(); renderTrain();
 }
 
@@ -932,7 +984,7 @@ function weekStrip(){
   for(var i=0;i<7;i++){
     var key=shiftDate(mon,i);
     var dow=new Date(key+"T00:00:00").getDay();
-    var sched=DOW[dow]!=="Rest";
+    var sched=sessionFor(key)!=="Rest";
     var done=state.workouts.some(function(w){ return w.date===key && w.done; });
     if(sched) schedCount++;
     if(done) doneCount++;
@@ -1040,10 +1092,10 @@ function renderProgress(){
   recEl.innerHTML='<div class="rn"><div class="t">'+esc(rec.title)+'</div><div class="s">'+esc(rec.sub)+'</div></div><div class="kc">'+rec.kcal+'<div style="font-size:10px;color:var(--faint);text-align:right">kcal/day</div></div>';
   bwCard.appendChild(recEl);
 
-  // projection
+  // plan checkpoints
   var pj=el("table","proj");
-  pj.innerHTML='<tr><th>Checkpoint</th><th>Weight</th><th>Body fat</th></tr>'+
-    PROJ.map(function(r,i){ return '<tr'+(i===0?' class="now"':'')+'><td>'+esc(r[0])+'</td><td>'+esc(r[1])+'</td><td>'+esc(r[2])+'</td></tr>'; }).join("");
+  pj.innerHTML='<tr><th>Checkpoint</th><th></th><th>Body fat</th></tr>'+
+    CHECKPOINTS.map(function(r,i){ return '<tr'+(i===CHECKPOINTS.length-1?' class="now"':'')+'><td>'+esc(r[0])+'</td><td>'+esc(r[1])+'</td><td>'+esc(r[2])+'</td></tr>'; }).join("");
   bwCard.appendChild(pj);
   v.appendChild(bwCard);
 
@@ -1102,11 +1154,11 @@ function stat(k,v,unit,cls){ return '<div class="stat"><div class="k">'+esc(k)+'
 
 function strengthExercises(){
   var seen={}, out=[];
-  ["UpperA","LowerA","UpperB","LowerB"].forEach(function(s){
+  LIFT_SESSIONS.forEach(function(s){
     PROGRAM[s].main.forEach(function(ex){
       var key=s+"|"+ex.id;
       // include only exercises we can chart (skip nothing; but only show once logged? show all)
-      out.push({ key:key, session:s, id:ex.id, type:ex.type||"weight", short:ex.n, sessLabel:PROGRAM[s].label });
+      out.push({ key:key, session:s, id:ex.id, type:ex.type||"weight", short:ex.n+" · "+PROGRAM[s].label.replace(/[a-z ]/g,""), sessLabel:PROGRAM[s].label });
     });
   });
   // prioritize ones with data first
@@ -1156,22 +1208,25 @@ function weekKey(dateStr){
   return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
 }
 function kcalRecommendation(){
+  var base=TARGETS.kcal, wk=blockWeek(todayKey());
+  if(wk===5) return {title:"Diet break week", sub:"Seven days at maintenance-ish intake, then back to "+base+".", kcal:DIET_BREAK_KCAL};
   var wKeys=Object.keys(state.weights).sort();
   var groups={};
-  wKeys.forEach(function(k){ var wk=weekKey(k); (groups[wk]=groups[wk]||[]).push(state.weights[k]); });
+  wKeys.forEach(function(k){ var w=weekKey(k); (groups[w]=groups[w]||[]).push(state.weights[k]); });
   var weeks=Object.keys(groups).sort();
-  if(weeks.length<2) return {title:"Gathering data", sub:"Log ~2 weeks of mornings; the plan auto-adjusts intake from your real loss rate.", kcal:1784};
+  if(weeks.length<2) return {title:"Gathering data", sub:"Weigh daily — judged on 7-day averages only.", kcal:base};
   function avg(a){ return a.reduce(function(x,y){return x+y;},0)/a.length; }
-  var lastKey=weeks[weeks.length-1], prevKey=weeks[weeks.length-2];
-  var last=avg(groups[lastKey]);
-  var prev=avg(groups[prevKey]);
-  // normalise by the real gap between the two weeks so a skipped week doesn't overstate the rate
-  var spanW=Math.max(1, Math.round((new Date(lastKey+"T00:00:00")-new Date(prevKey+"T00:00:00"))/(7*86400000)));
-  var loss=(prev-last)/spanW; // kg lost per week
-  var span=spanW>1? " (avg over "+spanW+" wks)" : "";
-  if(loss>0.6) return {title:"Losing >0.6 kg/wk — TDEE higher than estimated", sub:"Add 100g sweet potato to lunch."+span, kcal:2000};
-  if(loss<0.2) return {title:"Losing <0.2 kg/wk — TDEE lower than estimated", sub:"Drop the banana + almonds snack."+span, kcal:1650};
-  return {title:"On target ("+loss.toFixed(1)+" kg/wk)", sub:"Perfect rate. Stay the course."+span, kcal:1784};
+  // weekly loss rate between consecutive logged weeks, normalised for skipped weeks
+  function rate(i){
+    var lk=weeks[i], pk=weeks[i-1];
+    var spanW=Math.max(1, Math.round((new Date(lk+"T00:00:00")-new Date(pk+"T00:00:00"))/(7*86400000)));
+    return (avg(groups[pk])-avg(groups[lk]))/spanW;
+  }
+  var last=rate(weeks.length-1);
+  var prev=weeks.length>=3? rate(weeks.length-2) : null;
+  if(prev!=null && last>0.6 && prev>0.6) return {title:"Losing >0.6 kg/wk two weeks running", sub:"Escalation trigger — add "+ESCALATE_KCAL+" kcal/day.", kcal:base+ESCALATE_KCAL};
+  if(last>0.6) return {title:"Fast week ("+last.toFixed(1)+" kg/wk)", sub:"Hold "+base+". If next week is also >0.6, add "+ESCALATE_KCAL+" kcal.", kcal:base};
+  return {title:(last>=0?"Losing ":"Gaining ")+Math.abs(last).toFixed(1)+" kg/wk", sub:"Hold the plan. Judge on 7-day averages only.", kcal:base};
 }
 
 /* ---- tiny SVG line chart ---- */
@@ -1220,7 +1275,9 @@ function fmtNum(n){ n=Math.round(n*10)/10; return (n%1===0)? String(n) : n.toFix
    ============================================================ */
 function renderFuel(){
   var v=$("#view-fuel"); v.innerHTML="";
-  v.appendChild(el("div","eyebrow","Nutrition · 1784 kcal · identical daily"));
+  var dietBreak = blockWeek(todayKey())===5;
+  var kTarget = dietBreak? DIET_BREAK_KCAL : TARGETS.kcal;
+  v.appendChild(el("div","eyebrow","Nutrition · "+kTarget.toLocaleString("en-GB")+" kcal · same meals daily"));
   v.appendChild(el("div",null,'<div class="h-lg">Fuel</div>'));
 
   var tk=todayKey();
@@ -1234,17 +1291,14 @@ function renderFuel(){
   card.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:15px">Today’s intake</b><span class="faint mono" style="font-size:12px">'+doneN+'/5 meals</span></div>';
   var bars=el("div","macro-bars");
   bars.innerHTML =
-    macroBar("Calories", Math.round(sum.kcal), TARGETS.kcal, "kcal", "var(--accent)") +
+    macroBar("Calories", Math.round(sum.kcal), kTarget, "kcal", "var(--accent)") +
     macroBar("Protein", Math.round(sum.p), TARGETS.p, "g", "var(--cool)") +
     macroBar("Carbs", Math.round(sum.c), TARGETS.c, "g", "var(--good)") +
     macroBar("Fat", Math.round(sum.f), TARGETS.f, "g", "var(--bad)");
   card.appendChild(bars);
   v.appendChild(card);
 
-  // seasoning of the day
-  var seas=el("div","season");
-  seas.innerHTML='🧂 <b>Today’s seasoning:</b> '+esc(SEASONING[new Date().getDay()])+' — vary the flavour, macros unchanged.';
-  v.appendChild(seas);
+  if(dietBreak){ var db=el("div","season"); db.innerHTML='📌 <b>Diet break week</b> — 2,300 kcal/day for seven days. Add food on top of the meals below; protein stays the same.'; v.appendChild(db); }
 
   // meals
   MEALS.forEach(function(m){
@@ -1269,7 +1323,7 @@ function renderFuel(){
   var shop=el("details","ref");
   shop.innerHTML='<summary>Weekly Shopping List <span class="ic">⌄</span></summary>';
   var sc=el("div","rc");
-  sc.innerHTML='<div style="color:var(--faint);font-size:11.5px;padding-bottom:2px">Raw quantities, cooking loss accounted for. 9 ingredients.</div>'+
+  sc.innerHTML='<div style="color:var(--faint);font-size:11.5px;padding-bottom:2px">Raw weights for 7 days.</div>'+
     SHOPPING.map(function(r){ return '<div class="li"><span>'+esc(r[0])+'</span><span class="q">'+esc(r[1])+'</span></div>'; }).join("");
   shop.appendChild(sc); v.appendChild(shop);
 
@@ -1278,25 +1332,38 @@ function renderFuel(){
   cook.innerHTML='<summary>Cooking &amp; Prep <span class="ic">⌄</span></summary>';
   var cc=el("div","rc");
   cc.innerHTML=
-    '<h4>Option A · Twice-weekly batch cook</h4>'+
-    '<div class="li"><span><b>Sunday (~60 min)</b> — pressure cook 1.1kg chicken (12 min high, 10 min natural release, 200ml water). Cook all 3.5kg sweet potato + 2.6kg broccoli in air-fryer or oven batches. Fill 6 containers Mon–Wed; store extra veg in large tubs.</span></div>'+
-    '<div class="li"><span><b>Wednesday eve (~25 min)</b> — pressure cook 1.5kg chicken. Fill 8 containers Thu–Sun from veg already in the fridge.</span></div>'+
-    '<h4>Option B · Day-ahead (~5 min active/eve)</h4>'+
-    '<div class="li"><span>Sweet potato 750g cubed, air-fryer 190°C, 18–20 min (shake once). Chicken 370g in pressure cooker + 150ml water, 12 min high, quick release. Broccoli 370g in air-fryer for the final 8–10 min at 180°C. Portion 2 containers once cooled.</span></div>'+
-    '<h4>Storage</h4>'+
-    '<div class="li"><span>Mon–Wed containers</span><span class="q">fridge → Wed</span></div>'+
-    '<div class="li"><span>Thu–Sun containers</span><span class="q">fridge → Sun</span></div>'+
-    '<div class="li"><span>Veg (large tubs)</span><span class="q">fridge → Fri</span></div>';
+    '<h4>Daily cook · lunch + dinner (~20 min, ~5 active)</h4>'+
+    '<div class="li"><span>Raw: 400g chicken, 300g sweet potato, 300g tenderstem, 14ml olive oil.</span></div>'+
+    '<div class="li"><span><b>1.</b> Sweet potato in ~2cm cubes, toss in 7ml oil + salt. Air fryer 190°C, 18–20 min, shake once.</span></div>'+
+    '<div class="li"><span><b>2.</b> Chicken seasoned, pressure cooker + 150ml water, 12 min high. Quick release (or 10 min natural for juicier). 75°C internal.</span></div>'+
+    '<div class="li"><span><b>3.</b> Broccoli tossed in 7ml oil, into the air fryer for the final 8–10 min at 180°C.</span></div>'+
+    '<div class="li"><span><b>4.</b> Portion evenly into 2 containers once cooled.</span></div>'+
+    '<h4>Batch option · twice weekly</h4>'+
+    '<div class="li"><span><b>Sunday</b> — pressure cook 1.2kg raw chicken (12 min high, 10 min natural release, 200ml water) + veg for Mon–Wed. 6 containers.</span></div>'+
+    '<div class="li"><span><b>Wednesday</b> — pressure cook 1.6kg raw chicken + veg for Thu–Sun. 8 containers.</span></div>'+
+    '<div class="li"><span style="color:var(--faint);font-size:11.5px">Cooked weights assume ~13% loss (chicken) and ~15% (air-fried veg). For exact portions: weigh batch raw, weigh cooked, divide cooked total by meals.</span></div>';
   cook.appendChild(cc); v.appendChild(cook);
 
-  // 3-week check reference
+  // rules + escalation
   var chk=el("details","ref");
-  chk.innerHTML='<summary>3-Week Empirical Check <span class="ic">⌄</span></summary>';
+  chk.innerHTML='<summary>Rules &amp; Escalation <span class="ic">⌄</span></summary>';
   var chc=el("div","rc");
-  chc.innerHTML='<div style="color:var(--faint);font-size:11.5px;padding-bottom:4px">Weigh every morning (Progress tab). Average each week — your body is the most accurate calculator.</div>'+
-    '<div class="li"><span>Lost &gt; 0.6 kg/wk</span><span class="q">→ 2000 kcal</span></div>'+
-    '<div class="li"><span>Lost 0.3–0.5 kg/wk</span><span class="q">→ hold 1784</span></div>'+
-    '<div class="li"><span>Lost &lt; 0.2 kg/wk</span><span class="q">→ 1650 kcal</span></div>';
+  chc.innerHTML='<h4>Add 150 kcal if any of these fire</h4>'+
+    '<div class="li"><span>Weekly avg weight drops &gt; 0.6 kg two weeks running</span></div>'+
+    '<div class="li"><span>A main lift regresses two weeks running</span></div>'+
+    '<div class="li"><span>Sleep or session quality noticeably declines</span></div>'+
+    '<h4>Protocols</h4>'+
+    '<div class="li"><span>Weigh chicken + sweet potato raw where possible</span></div>'+
+    '<div class="li"><span>Sweet-potato meal within ~2h after training</span></div>'+
+    '<div class="li"><span><b>Lower-day swap</b> (only if Tue/Fri performance drops 2 weeks running): at one meal, −50g raw chicken, +75g raw sweet potato</span></div>'+
+    '<div class="li"><span>Omega-3: fish oil, or swap chicken for salmon a few meals/week (cut olive oil in that meal)</span></div>'+
+    '<div class="li"><span>Water</span><span class="q">3 L/day</span></div>'+
+    '<div class="li"><span>Coffee &amp; zero-cal drinks</span><span class="q">free</span></div>'+
+    '<div class="li"><span>Alcohol — log at 7 kcal/g</span><span class="q">pint ~180 · spirit+soda ~120</span></div>'+
+    '<div class="li"><span>Diet break</span><span class="q">week 5 · 2,300 kcal</span></div>'+
+    '<h4>Tracking</h4>'+
+    '<div class="li"><span>Weigh daily, judge on 7-day averages (Progress tab)</span></div>'+
+    '<div class="li"><span>Waist + photos</span><span class="q">every 4 weeks</span></div>';
   chk.appendChild(chc); v.appendChild(chk);
 }
 function macroBar(lab, val, target, unit, color){
@@ -1535,11 +1602,11 @@ function renderData(){
   sumCard.appendChild(kv);
   v.appendChild(sumCard);
 
-  // summit date
+  // block start date
   var sc=el("div","card");
-  sc.innerHTML='<b style="font-size:14px">Summit date</b><div class="muted" style="font-size:12px;margin-top:4px">Drives the countdown and progress bar in the header.</div>';
-  var di=document.createElement("input"); di.type="date"; di.className="date-inp"; di.value=state.settings.summitISO;
-  di.onchange=function(){ if(di.value){ state.settings.summitISO=di.value; saveNow(); updateSummit(); toast("Summit date updated"); } };
+  sc.innerHTML='<b style="font-size:14px">Block start date</b><div class="muted" style="font-size:12px;margin-top:4px">Start of the current 6-week block. Drives the week counter in the header, the week 1 / 5 / 6 notes and the diet-break target. Change it when you start a new block.</div>';
+  var di=document.createElement("input"); di.type="date"; di.className="date-inp"; di.value=state.settings.blockStartISO;
+  di.onchange=function(){ if(di.value){ state.settings.blockStartISO=di.value; saveNow(); renderAll(); toast("Block start updated"); } };
   sc.appendChild(di);
   v.appendChild(sc);
 
@@ -1555,7 +1622,7 @@ function renderData(){
   dc.appendChild(del);
   v.appendChild(dc);
 
-  v.appendChild(el("div","faint","<div style='text-align:center;font-size:11px;padding:16px 0 4px'>Built from Training Plan vf · Kilimanjaro Prep, Summer 2026</div>"));
+  v.appendChild(el("div","faint","<div style='text-align:center;font-size:11px;padding:16px 0 4px'>Body Recomposition plan · block from 20 Sept 2026</div>"));
 }
 function kvRow(k,v){ return '<div class="kv"><span class="kl">'+esc(k)+'</span><span class="kr">'+esc(v)+'</span></div>'; }
 function timeAgo(iso){
@@ -1594,16 +1661,17 @@ fileInput.onchange=function(){
 };
 
 /* ============================================================
-   HEADER / SUMMIT
+   HEADER / BLOCK WEEK
    ============================================================ */
-function updateSummit(){
-  var summit=new Date(state.settings.summitISO+"T00:00:00").getTime();
-  var start=new Date("2026-06-23T00:00:00").getTime();
-  var now=Date.now();
-  var days=Math.ceil((summit-now)/86400000);
-  $("#summitDays").textContent = days>0? days : (days===0?"today":"done");
-  var pct = Math.max(0,Math.min(100,(now-start)/(summit-start)*100));
-  $("#summitFill").style.width=pct+"%";
+function updateBlock(){
+  var wk=blockWeek(todayKey()), lbl=$("#blockLbl"), val=$("#blockWeek"), fill=$("#blockFill");
+  if(wk<1){ lbl.textContent="Block starts "+fmtDate(state.settings.blockStartISO+"T00:00:00"); val.textContent=""; fill.style.width="0%"; return; }
+  if(wk>BLOCK_WEEKS){ lbl.textContent="Block complete"; val.textContent="set a new start in Data"; fill.style.width="100%"; return; }
+  var bn=blockNote(wk);
+  lbl.textContent = bn? bn.t.split(" · ")[1] : "6-week block";
+  val.textContent = "Week "+wk+" of "+BLOCK_WEEKS;
+  var days=Math.floor((new Date(todayKey()+"T00:00:00")-new Date(state.settings.blockStartISO+"T00:00:00"))/86400000)+1;
+  fill.style.width=Math.min(100, days/(BLOCK_WEEKS*7)*100).toFixed(1)+"%";
 }
 
 /* ============================================================
@@ -1657,7 +1725,7 @@ function applyTheme(){ document.documentElement.removeAttribute("data-theme"); }
 /* ============================================================
    NAV / BOOT
    ============================================================ */
-function renderAll(){ renderTrain(); renderProgress(); renderFuel(); renderQuit(); renderData(); switchTab(state.ui.tab, true); updateSummit(); }
+function renderAll(){ renderTrain(); renderProgress(); renderFuel(); renderQuit(); renderData(); switchTab(state.ui.tab, true); updateBlock(); }
 function switchTab(tab, silent){
   state.ui.tab=tab; if(!silent) save();
   var tabs=document.querySelectorAll(".tab");
@@ -1674,7 +1742,7 @@ document.querySelectorAll(".tab").forEach(function(t){
 
 // clocks
 setInterval(tickQuit,1000);
-setInterval(updateSummit,60000);
+setInterval(updateBlock,60000);
 
 state.ui.trainDate=null; // always open the Train tab on today's date
 applyTheme();

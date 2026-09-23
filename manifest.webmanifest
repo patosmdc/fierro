@@ -1,7 +1,7 @@
 {
-  "name": "Fierro · Kilimanjaro Trainer",
+  "name": "Fierro",
   "short_name": "Fierro",
-  "description": "Personal training, fuel and quit-nicotine tracker for the Kilimanjaro climb.",
+  "description": "Personal training, nutrition and quit-nicotine tracker.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
