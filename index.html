@@ -565,23 +565,32 @@ function blockNote(wk){
 }
 
 var MEALS = [
-  {id:"m1", n:"Breakfast", t:"Morning", kcal:365, p:34, c:21, f:15, note:"Eggs cooked fresh. Apple on the side.",
-   ing:[["Medium eggs","3"],["Egg whites","150g"],["Green apple","1 (~150g)"]]},
-  {id:"m2", n:"Lunch", t:"Midday", kcal:485, p:53, c:38, f:11, note:"Weigh raw where possible. Keep a sweet-potato meal within ~2h after training.",
-   ing:[["Chicken breast","200g raw"],["Sweet potato","180g raw"],["Tenderstem broccoli","150g raw"],["Olive oil","7ml"]]},
-  {id:"m3", n:"Pre-workout Snack", t:"60–90 min pre-training", kcal:220, p:5, c:30, f:11, note:"Eat 60–90 min before you train.",
-   ing:[["Banana","1 (~120g peeled)"],["Almonds","20g"]]},
-  {id:"m4", n:"Dinner", t:"Evening", kcal:485, p:53, c:38, f:11, note:"Identical to lunch.",
-   ing:[["Chicken breast","200g raw"],["Sweet potato","180g raw"],["Tenderstem broccoli","150g raw"],["Olive oil","7ml"]]},
-  {id:"m5", n:"Evening", t:"Before bed", kcal:145, p:20, c:16, f:0, note:"Straight from the fridge.",
-   ing:[["Greek yogurt 0% fat","200g"],["Berries (frozen ok)","100g"]]}
+  {id:"m1", n:"Breakfast", t:"Morning", kcal:365, p:22, c:21, f:21, note:"Eggs cooked fresh with feta crumbled in. Apple on the side.",
+   ing:[["Medium eggs","3"],["Feta","30g"],["Green apple","1 (~150g)"]]},
+  {id:"m2", n:"Lunch", t:"Midday", kcal:510, p:59, c:38, f:11, note:"Weigh raw where possible. Keep a potato meal within ~2h after training.",
+   ing:[["Chicken breast","225g raw (~170g cooked)"],["Sweet potato","180g raw (~140g cooked)"],["Tenderstem broccoli","150g raw (~120g cooked)"],["Olive oil","7ml"]]},
+  {id:"m3", n:"Pre-workout Snack", t:"60–90 min pre-training", kcal:160, p:3, c:28, f:6, note:"Eat 60–90 min before you train.",
+   ing:[["Banana","1 (~120g peeled)"],["Almonds","10g"]]},
+  {id:"m4", n:"Dinner", t:"Evening", kcal:510, p:59, c:38, f:11, note:"Identical to lunch.",
+   ing:[["Chicken breast","225g raw (~170g cooked)"],["Sweet potato","180g raw (~140g cooked)"],["Tenderstem broccoli","150g raw (~120g cooked)"],["Olive oil","7ml"]]},
+  {id:"m5", n:"Evening", t:"Before bed", kcal:170, p:25, c:18, f:0, note:"Straight from the fridge.",
+   ing:[["Greek yogurt 0% fat","250g"],["Berries (frozen ok)","100g"]]}
 ];
 var TARGETS = {kcal:1690, p:165, c:145, f:50};
 var DIET_BREAK_KCAL = 2300, ESCALATE_KCAL = 150;
 var SHOPPING = [
-  ["Chicken breast","2.8 kg raw"],["Sweet potato","2.52 kg raw"],["Tenderstem broccoli","2.1 kg raw"],
-  ["Medium eggs","21"],["Egg whites","1.05 kg"],["Green apple","7"],["Greek yogurt 0%","1.4 kg"],
-  ["Berries","700g"],["Banana","7"],["Almonds","140g"],["Olive oil","~100ml"]
+  ["Chicken breast","3.15 kg raw"],["Sweet potato","2.52 kg raw (or potato 2.8 kg)"],["Green veg","2.1 kg raw (tenderstem, broccoli or mix)"],
+  ["Medium eggs","21"],["Feta","200g (1 block)"],["Green apple","7"],["Banana","7"],["Almonds","70g"],
+  ["Greek yogurt 0%","1.75 kg"],["Berries","700g"],["Olive oil","~100ml"]
+];
+// per lunch/dinner portion
+var SWAPS = [
+  ["Sweet potato → Potato","200g raw (~155g cooked)"],
+  ["Tenderstem → Broccoli","150g raw (~120g cooked)"],
+  ["Tenderstem → Carrots","120g raw (~95g cooked), adds ~6g carbs"],
+  ["Tenderstem → Broccoli + carrots","75g + 60g raw, keeps carbs on target"],
+  ["Tenderstem → Green beans 150g / Asparagus 200g / Cauliflower 200g / Peppers 150g / Courgette 250g / Mushrooms 250g","raw"],
+  ["Feta → Light feta 30g","keep almonds at 15g instead of 10g"]
 ];
 var CHECKPOINTS = [
   ["Start · 20 Sept","~73 kg","20–22%"],["DEXA baseline · wk of 22 Sept","BodyScan W1",""],
@@ -1324,6 +1333,14 @@ function renderFuel(){
     v.appendChild(meal);
   });
 
+  // reference: swaps
+  var sw=el("details","ref");
+  sw.innerHTML='<summary>Swaps <span class="ic">⌄</span></summary>';
+  var swc=el("div","rc");
+  swc.innerHTML='<div style="color:var(--faint);font-size:11.5px;padding-bottom:2px">Per lunch or dinner portion.</div>'+
+    SWAPS.map(function(r){ return '<div class="li"><span>'+esc(r[0])+'</span><span class="q">'+esc(r[1])+'</span></div>'; }).join("");
+  sw.appendChild(swc); v.appendChild(sw);
+
   // reference: shopping
   var shop=el("details","ref");
   shop.innerHTML='<summary>Weekly Shopping List <span class="ic">⌄</span></summary>';
@@ -1338,15 +1355,23 @@ function renderFuel(){
   var cc=el("div","rc");
   cc.innerHTML=
     '<h4>Daily cook · lunch + dinner (~20 min, ~5 active)</h4>'+
-    '<div class="li"><span>Raw: 400g chicken, 360g sweet potato, 300g tenderstem, 14ml olive oil.</span></div>'+
+    '<div class="li"><span>Raw: 450g chicken, 360g sweet potato, 300g tenderstem, 14ml olive oil.</span></div>'+
     '<div class="li"><span><b>1.</b> Sweet potato in ~2cm cubes, toss in 7ml oil + salt. Air fryer 190°C, 18–20 min, shake once.</span></div>'+
     '<div class="li"><span><b>2.</b> Chicken seasoned, pressure cooker + 150ml water, 12 min high. Quick release (or 10 min natural for juicier). 75°C internal.</span></div>'+
     '<div class="li"><span><b>3.</b> Broccoli tossed in 7ml oil, into the air fryer for the final 8–10 min at 180°C.</span></div>'+
     '<div class="li"><span><b>4.</b> Portion evenly into 2 containers once cooled.</span></div>'+
+    '<h4>5-day batch (10 boxes)</h4>'+
+    '<div class="li"><span>Chicken</span><span class="q">2,250g raw → ~170g cooked/box</span></div>'+
+    '<div class="li"><span>Sweet potato</span><span class="q">1,800g raw → ~140g cooked/box</span></div>'+
+    '<div class="li"><span style="color:var(--faint)">or Potato</span><span class="q">2,000g raw → ~155g cooked/box</span></div>'+
+    '<div class="li"><span>Green veg</span><span class="q">1,500g raw → ~120g cooked/box</span></div>'+
+    '<div class="li"><span>Olive oil</span><span class="q">70ml</span></div>'+
+    '<div class="li"><span><b>Air fryer</b> — 200°C. Potato cubes 8 min, add chicken chunks 6 min, add veg 6–8 min. Chicken done at 74°C.</span></div>'+
+    '<div class="li"><span><b>Tip</b> — to portion accurately, tare a large bowl, tip the cooked batch in, and divide the total by 10.</span></div>'+
     '<h4>Batch option · twice weekly</h4>'+
-    '<div class="li"><span><b>Sunday</b> — pressure cook 1.2kg raw chicken (12 min high, 10 min natural release, 200ml water); air-fry 1.08kg raw sweet potato + 900g raw tenderstem. 6 containers for Mon–Wed.</span></div>'+
-    '<div class="li"><span><b>Wednesday</b> — pressure cook 1.6kg raw chicken; air-fry 1.44kg raw sweet potato + 1.2kg raw tenderstem. 8 containers for Thu–Sun.</span></div>'+
-    '<div class="li"><span style="color:var(--faint);font-size:11.5px">All weights are raw. Split each batch evenly across the containers.</span></div>';
+    '<div class="li"><span><b>Sunday</b> — pressure cook 1.35kg raw chicken (12 min high, 10 min natural release, 200ml water); air-fry 1.08kg raw sweet potato + 900g raw green veg. 6 containers for Mon–Wed.</span></div>'+
+    '<div class="li"><span><b>Wednesday</b> — pressure cook 1.8kg raw chicken; air-fry 1.44kg raw sweet potato + 1.2kg raw green veg. 8 containers for Thu–Sun.</span></div>'+
+    '<div class="li"><span style="color:var(--faint);font-size:11.5px">Weights are raw unless marked cooked. Split each batch evenly across the containers.</span></div>';
   cook.appendChild(cc); v.appendChild(cook);
 
   // rules + escalation
