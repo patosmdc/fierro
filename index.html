@@ -570,11 +570,11 @@ var MEALS = [
   {id:"m1", n:"Breakfast", t:"Morning", kcal:365, p:34, c:21, f:15, note:"Eggs cooked fresh. Apple on the side.",
    ing:[["Medium eggs","3"],["Egg whites","150g"],["Green apple","1 (~150g)"]]},
   {id:"m2", n:"Lunch", t:"Midday", kcal:485, p:53, c:38, f:11, note:"Weigh raw where possible. Keep a sweet-potato meal within ~2h after training.",
-   ing:[["Chicken breast","200g raw (~150g cooked)"],["Sweet potato","180g raw (~144g cooked)"],["Tenderstem broccoli","150g raw (~128g cooked)"],["Olive oil","7ml"]]},
+   ing:[["Chicken breast","200g raw"],["Sweet potato","180g raw"],["Tenderstem broccoli","150g raw"],["Olive oil","7ml"]]},
   {id:"m3", n:"Pre-workout Snack", t:"60–90 min pre-training", kcal:220, p:5, c:30, f:11, note:"Eat 60–90 min before you train.",
    ing:[["Banana","1 (~120g peeled)"],["Almonds","20g"]]},
   {id:"m4", n:"Dinner", t:"Evening", kcal:485, p:53, c:38, f:11, note:"Identical to lunch.",
-   ing:[["Chicken breast","200g raw (~150g cooked)"],["Sweet potato","180g raw (~144g cooked)"],["Tenderstem broccoli","150g raw (~128g cooked)"],["Olive oil","7ml"]]},
+   ing:[["Chicken breast","200g raw"],["Sweet potato","180g raw"],["Tenderstem broccoli","150g raw"],["Olive oil","7ml"]]},
   {id:"m5", n:"Evening", t:"Before bed", kcal:145, p:20, c:16, f:0, note:"Straight from the fridge.",
    ing:[["Greek yogurt 0% fat","200g"],["Berries (frozen ok)","100g"]]}
 ];
@@ -1332,15 +1332,15 @@ function renderFuel(){
   var cc=el("div","rc");
   cc.innerHTML=
     '<h4>Daily cook · lunch + dinner (~20 min, ~5 active)</h4>'+
-    '<div class="li"><span>Raw: 400g chicken, 300g sweet potato, 300g tenderstem, 14ml olive oil.</span></div>'+
+    '<div class="li"><span>Raw: 400g chicken, 360g sweet potato, 300g tenderstem, 14ml olive oil.</span></div>'+
     '<div class="li"><span><b>1.</b> Sweet potato in ~2cm cubes, toss in 7ml oil + salt. Air fryer 190°C, 18–20 min, shake once.</span></div>'+
     '<div class="li"><span><b>2.</b> Chicken seasoned, pressure cooker + 150ml water, 12 min high. Quick release (or 10 min natural for juicier). 75°C internal.</span></div>'+
     '<div class="li"><span><b>3.</b> Broccoli tossed in 7ml oil, into the air fryer for the final 8–10 min at 180°C.</span></div>'+
     '<div class="li"><span><b>4.</b> Portion evenly into 2 containers once cooled.</span></div>'+
     '<h4>Batch option · twice weekly</h4>'+
-    '<div class="li"><span><b>Sunday</b> — pressure cook 1.2kg raw chicken (12 min high, 10 min natural release, 200ml water) + veg for Mon–Wed. 6 containers.</span></div>'+
-    '<div class="li"><span><b>Wednesday</b> — pressure cook 1.6kg raw chicken + veg for Thu–Sun. 8 containers.</span></div>'+
-    '<div class="li"><span style="color:var(--faint);font-size:11.5px">Cooked weights assume ~13% loss (chicken) and ~15% (air-fried veg). For exact portions: weigh batch raw, weigh cooked, divide cooked total by meals.</span></div>';
+    '<div class="li"><span><b>Sunday</b> — pressure cook 1.2kg raw chicken (12 min high, 10 min natural release, 200ml water); air-fry 1.08kg raw sweet potato + 900g raw tenderstem. 6 containers for Mon–Wed.</span></div>'+
+    '<div class="li"><span><b>Wednesday</b> — pressure cook 1.6kg raw chicken; air-fry 1.44kg raw sweet potato + 1.2kg raw tenderstem. 8 containers for Thu–Sun.</span></div>'+
+    '<div class="li"><span style="color:var(--faint);font-size:11.5px">All weights are raw. Split each batch evenly across the containers.</span></div>';
   cook.appendChild(cc); v.appendChild(cook);
 
   // rules + escalation
